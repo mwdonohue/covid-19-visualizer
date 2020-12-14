@@ -1,17 +1,65 @@
 import "./App.css";
 import React, { useEffect, useState } from "react";
+import { LineChart, XAxis, YAxis, CartesianGrid, Line } from "recharts";
 function App() {
   const [covidStates, setCovidStates] = useState([]);
-  const [stateData, setStateData] = useState({});
+  const [stateData, setStateData] = useState(undefined);
+  const [graphData, setGraphData] = useState(undefined);
+
   useEffect(() =>
     fetch("https://api.covidtracking.com/v1/states/current.json")
       .then((response) => response.json())
       .then((data) => setCovidStates(data))
   );
-  useEffect(() => {}, [stateData]);
+  useEffect(() => {
+    if (stateData !== undefined) {
+      let currDate = new Date();
+      let graphData = [];
+      for (let i = 0; i <= 29; i++) {
+        currDate.setDate(currDate.getDate() - 1);
+        let dateString = (() => {
+          return (
+            currDate.getFullYear() +
+            "" +
+            getProperNum(currDate.getMonth() + 1) +
+            "" +
+            getProperNum(currDate.getDate())
+          );
+        })();
+
+        // console.log(dateString);
+        fetch(
+          "https://api.covidtracking.com/v1/states/" +
+            stateData.state +
+            "/" +
+            dateString +
+            ".json"
+        )
+          .then((response) => response.json())
+          .then((data) =>
+            graphData.unshift({
+              name:
+                dateString.substring(4, 6) + "/" + dateString.substring(6, 8),
+              uv: data.positiveIncrease,
+              pv: Math.random(),
+              amt: Math.random(),
+            })
+          );
+      }
+      setGraphData(graphData);
+    }
+  }, [stateData]);
+
+  function getProperNum(num) {
+    if (num < 10) {
+      return "0" + num;
+    }
+    return num;
+  }
   const onLandMassChange = (e) => {
     setStateData(covidStates[e.target.value]);
   };
+
   return (
     <div className="App">
       <h1>COVID-19 Visualizer</h1>
@@ -25,22 +73,40 @@ function App() {
       </select>
       <div>
         {(() => {
-          if (stateData !== undefined && Object.keys(stateData).length !== 0) {
+          if (stateData !== undefined) {
             return (
               <div className="table">
                 <table>
                   <tbody>
                     <tr>
-                      <th>Deaths:</th>
+                      <th>Total Deaths:</th>
                       <td>{stateData.death}</td>
                     </tr>
                     <tr>
                       <th>Death Increase:</th>
                       <td>{stateData.deathIncrease}</td>
                     </tr>
+                    <tr>
+                      <th>Number Positive Increase</th>
+                      <td>{stateData.positiveIncrease}</td>
+                    </tr>
                   </tbody>
                 </table>
               </div>
+            );
+          }
+        })()}
+      </div>
+      <div>
+        {(() => {
+          if (graphData !== undefined && graphData.length === 30) {
+            return (
+              <LineChart width={600} height={300} data={graphData}>
+                <Line type="monotone" dataKey="uv" stroke="#8884d8" />
+                <CartesianGrid stroke="#ccc" />
+                <XAxis dataKey="name" />
+                <YAxis />
+              </LineChart>
             );
           }
         })()}
