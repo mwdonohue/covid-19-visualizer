@@ -2,7 +2,8 @@
 This is a small toy project that I am working on to gain experience with React/JS/Web Stuff. As of right now, it is pretty barebones and ugly. A few statistics are displayed and a graph of the number of positive case increase from the past 30 days are available for the U.S. states.
 
 # Planned Additions
-- [ ] Styling to make it less ugly
+- [x] Styling to make it less ugly
+- [ ] Styling to make it actually look good
 - [ ] User controlled date range for the graphs
 - [ ] More statistics graphed
 - [ ] More statistics in general
