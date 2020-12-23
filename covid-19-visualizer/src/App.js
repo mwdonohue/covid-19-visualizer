@@ -26,8 +26,6 @@ function App() {
             getProperNum(currDate.getDate())
           );
         })();
-
-        // console.log(dateString);
         fetch(
           "https://api.covidtracking.com/v1/states/" +
             stateData.state +
@@ -62,8 +60,8 @@ function App() {
 
   return (
     <div className="App">
-      <h1>COVID-19 Visualizer</h1>
-      <select onChange={onLandMassChange}>
+      <h1 className="title">COVID-19 Visualizer</h1>
+      <select className="selectButton" onChange={onLandMassChange}>
         <option>Select a state</option>
         {covidStates.map((entry, index) => (
           <option key={index} value={index}>
@@ -71,11 +69,11 @@ function App() {
           </option>
         ))}
       </select>
-      <div>
+      <div className="table">
         {(() => {
           if (stateData !== undefined) {
             return (
-              <div className="table">
+              <div>
                 <table>
                   <tbody>
                     <tr>
@@ -87,7 +85,7 @@ function App() {
                       <td>{stateData.deathIncrease}</td>
                     </tr>
                     <tr>
-                      <th>Number Positive Increase</th>
+                      <th>Number Positive Increase:</th>
                       <td>{stateData.positiveIncrease}</td>
                     </tr>
                   </tbody>
@@ -97,7 +95,7 @@ function App() {
           }
         })()}
       </div>
-      <div>
+      <div className="graph">
         {(() => {
           if (graphData !== undefined && graphData.length === 30) {
             return (
