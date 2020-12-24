@@ -47,8 +47,16 @@ function App() {
             ).then((response) => response.json())
           );
         }
+
+        // A lot to unpack here. Promise.all takes in an iterable of promises, resolves every one of them, and then returns a promise that is an array
+        // of results. Afterwards, the .then() takes in this promise as an input (thus "unpacking" it) and allows the data to be accessed.
+        // .then returns a promise that resolves.
+        // The "await" keyword waits for the second promise to resolve and pauses any action inside the async function.
+        // setGraphData is in the async function for this reason: we want the data to be computed before putting it in the array
+        // Ultimately, the await keyword is what makes this different than the promise clownery above.
+        // Above, the graphDataPromise array is going to put the promises themselves in the array and not wait for them to resolve.
+        // This is actually a good thing because it's *much* faster than awaiting up there for *each* date linearly
         await Promise.all(graphDataPromises).then((data) => {
-          // console.log(data);
           data.forEach((element) => {
             gData.push({
               name:
@@ -58,8 +66,8 @@ function App() {
               inc: element.positiveIncrease,
             });
           });
-          setGraphData(gData);
         });
+        setGraphData(gData);
       })();
     }
   }, [stateData]);
